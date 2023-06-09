@@ -46,8 +46,8 @@ app.post('/api/unsubscribe', async (req, res) => {
         });
         const find_data = await Subscribers.find(data)
         if (find_data != 0) {
-            const fetchid = await Subscribers.find(data)
-            const id = fetchid[0]._id.valueOf()
+            const fetchid = await Subscribers.find(data);
+            const id = fetchid[0]._id.valueOf();
             await Subscribers.findByIdAndDelete({ _id: id });
             res.status(200).send("You are UnSubscribed Successfully...");
         }
@@ -62,7 +62,7 @@ app.post('/api/unsubscribe', async (req, res) => {
 app.post('/api/testHook', async (req, res) => {
     try {
         await sendToAll(req.body);
-        res.status(200).send("Send data to Web Hook")
+        res.status(200).send("Send data to Web Hook");
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -83,7 +83,13 @@ const sendToAll = async (publishData) => {
   
         try {
           // Send data to all subscribers
-          await axios.post(subscriberUrls, JSON.stringify(publishData), { headers });
+         subscriberUrls.forEach(async subscriberUrl => {
+            try {
+                await axios.post(subscriberUrl, JSON.stringify(publishData), { headers });
+            } catch (error) {
+                console.error(error);
+            }
+         })
         } catch (error) {
           console.error(error);
         }
